@@ -16,9 +16,13 @@ This project aims to allow that and more.
 
 # PONG
 
-There's a PONG prototype in tests/pong.py (`cd tests && python3 pong.py`).
+There's a PONG prototype in tests/pong.py. It's a python program that only imports sys and struct (to make it easier to output bytes), but it can play PONG (sort of, you can move the paddles using keys W and S).
 
-It's a python program that only imports struct (to make it easier to output bytes) and subprocess (in order to run pipevm.py and handles stdin/stdout pipes), but it can play PONG (sort of, you can move the paddles using keys W and S).
+You can run connecting it's stdin/stdout to pipevm stdout/stdin:
+```
+$ pongff="/tmp/pongff"; [ ! -p "$pongff" ] && mkfifo "$pongff";
+$ <"$pongff" ./pipevm.py | ./tests/pong.py >"$pongff"
+```
 
 ![pong prototype](https://i.imgur.com/YAo92JR.png)
 

@@ -1,5 +1,7 @@
+#!/usr/bin/python3
+
+import sys
 import struct
-import subprocess
 
 w, h = 320, 240
 
@@ -21,44 +23,42 @@ class Devices:
 
 
 def main():
-    vm = subprocess.Popen(["../pipevm.py"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
-    vm.stdin.write(switch_device(Devices.GRAPHIC))
+    sys.stdout.buffer.raw.write(switch_device(Devices.GRAPHIC))
 
     # black screen
-    vm.stdin.write(draw_rectangle(0, 0, w, h, 0, 0, 0))
+    sys.stdout.buffer.raw.write(draw_rectangle(0, 0, w, h, 0, 0, 0))
     # draw left paddle
-    vm.stdin.write(draw_rectangle(paddle_left_x, int(paddle_left_y - paddle_h/2), paddle_w, paddle_h, *paddle_rgb))
+    sys.stdout.buffer.raw.write(draw_rectangle(paddle_left_x, int(paddle_left_y - paddle_h/2), paddle_w, paddle_h, *paddle_rgb))
     # draw right paddle
-    vm.stdin.write(draw_rectangle(paddle_right_x, int(paddle_right_y - paddle_h/2), paddle_w, paddle_h, *paddle_rgb))
+    sys.stdout.buffer.raw.write(draw_rectangle(paddle_right_x, int(paddle_right_y - paddle_h/2), paddle_w, paddle_h, *paddle_rgb))
     # draw ball
-    vm.stdin.write(move_ball(0, 0))
-    vm.stdin.flush()
+    sys.stdout.buffer.raw.write(move_ball(0, 0))
+    sys.stdout.flush()
 
-    vm.stdin.write(switch_device(Devices.KEYBOARD))
+    sys.stdout.buffer.raw.write(switch_device(Devices.KEYBOARD))
     moves = 0
     while moves < 20:
-        vm.stdin.write(get_key_pressed())
-        vm.stdin.flush()
+        sys.stdout.buffer.raw.write(get_key_pressed())
+        sys.stdout.flush()
 
-        v = vm.stdout.read(1)
+        v = sys.stdin.buffer.raw.read(1)
         if v == b'\x00':
             continue
 
         # as a hack to get a time.delay(), the ball only moves when there's a key press
         # also, make it follow the paddle movement
-        vm.stdin.write(switch_device(Devices.GRAPHIC))
+        sys.stdout.buffer.raw.write(switch_device(Devices.GRAPHIC))
 
-        k = vm.stdout.read(1)
+        k = sys.stdin.buffer.raw.read(1)
         if k == b'w':
-            vm.stdin.write(move_left_paddle_up(5))
-            vm.stdin.write(move_ball(-5, -5))
+            sys.stdout.buffer.raw.write(move_left_paddle_up(5))
+            sys.stdout.buffer.raw.write(move_ball(-5, -5))
         elif k == b's':
-            vm.stdin.write(move_left_paddle_down(5))
-            vm.stdin.write(move_ball(-5, 5))
+            sys.stdout.buffer.raw.write(move_left_paddle_down(5))
+            sys.stdout.buffer.raw.write(move_ball(-5, 5))
 
-        vm.stdin.flush()
-        vm.stdin.write(switch_device(Devices.KEYBOARD))
+        sys.stdout.flush()
+        sys.stdout.buffer.raw.write(switch_device(Devices.KEYBOARD))
 
         moves += 1
 

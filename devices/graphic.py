@@ -1,3 +1,4 @@
+import sys
 from devices import Device
 
 class Graphic(Device):
@@ -42,7 +43,7 @@ class Graphic(Device):
             rgb = f"#{r}{g}{b}"
 
             # TODO if debug
-            print(x, y, w, h, r, g, b, rgb)
+            print(x, y, w, h, r, g, b, rgb, file=sys.stderr)
             self.vm.drawRect(x, y, w, h, rgb)
         else:
             raise Exception(f"Invalid command: {c}")
