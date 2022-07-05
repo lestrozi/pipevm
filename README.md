@@ -17,7 +17,7 @@ This project aims to allow that and more.
 The echoed string can be cut short at any point (better results if it's before `\xff\x80` or `\xff\x81`) to see partial examples
 
 ```
-$ echo -ne "text\xff\x81\x05\x00\x0a\x00\x32\x00\x05\x00\x1e\x70\x80\x90\xff\x80\xff\xff\x00hi\xff\x81\00" | stdbuf -i0 -o0 -e0 python3 pipevm.py
+$ echo -ne "text\xff\x81\x05\x00\x0a\x00\x32\x00\x05\x00\x1e\x70\x80\x90\xff\x80\xff\xff\x00hi\xff\x81\x00" | stdbuf -i0 -o0 -e0 python3 pipevm.py
             ^^^^ print "text" in text mode
                 ^^^^^^^^ special char (switches to "command mode") followed by command 0x81, which switches device to device=1 (graphic screen)
                         ^^^^ operation 5 (draw rectangle)

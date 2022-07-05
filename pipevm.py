@@ -1,7 +1,13 @@
+#!/usr/bin/python3
+
 from bitutil import BitStream
-from vm import Vm
 from devices import text, graphic, keyboard
+from vm import Vm
+import fcntl
+import os
 import sys
+
+import time
 
 class PipeCmd:
     SPECIAL_CHAR = 0xff
@@ -14,22 +20,40 @@ class PipeCmd:
                                     # is ignored if byteAligned = True
 
 
+        # for now, let all devices share the same outputBuffer
+        self.outputBuffer = BitStream()
+
         self.vm = vm
         self.devices = [
-                text.Text(vm, self.byteAligned),
-                graphic.Graphic(vm, self.byteAligned),
-                keyboard.Keyboard(vm, self.byteAligned),
+                text.Text(vm, self.outputBuffer, self.byteAligned),
+                graphic.Graphic(vm, self.outputBuffer, self.byteAligned),
+                keyboard.Keyboard(vm, self.outputBuffer, self.byteAligned),
         ]
         self.device = self.devices[0]
         self.inputBuffer = BitStream()
 
         fd = sys.stdin.fileno()
+        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
         while True:
+            # FIXME: improve stdin/out handling loop
+
+            # handle output (devices -> stdout)
+            while len(self.outputBuffer) >= 8:
+                c = self.outputBuffer.read(8)
+                sys.stdout.buffer.raw.write(c.bytes)
+                sys.stdout.buffer.raw.flush()
+
+            # handle input (stdin -> devices)
             b = sys.stdin.buffer.raw.read(1)
-            if b == b'':
-                print("EOF")
-                quit()
+            if b == b'' or b is None:
+                continue
+                print("EOF", file=sys.stderr)
+                #quit()
+
+            # FIXME
+            time.sleep(0.001)
 
             # if bitDictionary is set, read input bytes as representing an individual bit
             if self.bitDictionary:
@@ -59,7 +83,7 @@ class PipeCmd:
                 elif (c >= self.DEVICE_SELECTOR_CHAR
                         and c <= (self.DEVICE_SELECTOR_CHAR + len(self.devices))):
                     deviceNum = c - self.DEVICE_SELECTOR_CHAR
-                    print(f"Selecting device {deviceNum}")
+                    print(f"Selecting device {deviceNum}", file=sys.stderr)
                     self.setDevice(deviceNum)
                 else:
                     raise Exception(f"Invalid command: {c}")

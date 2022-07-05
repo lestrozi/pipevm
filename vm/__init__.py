@@ -9,6 +9,7 @@ class Vm(threading.Thread):
     def __init__(self):
         self.mode = self.Mode.TEXT
         self.isReady = False
+        self.keyPressed = None
 
         threading.Thread.__init__(self)
         self.start()
@@ -32,12 +33,15 @@ class Vm(threading.Thread):
         self.canvas.update()
 
     def onKeyPress(self, event):
-        #self.text.insert('end', 'You pressed %s\n' % (event.char, ))
-        pass
+        # TODO: add support for multiple keypress?
+        self.keyPressed = event.char
 
     def onKeyRelease(self, event):
-        #self.text.insert('end', 'You released %s\n' % (event.char, ))
-        pass
+        # TODO: add support for multiple keypress?
+        self.keyPressed = None
+
+    def getKeyPressed(self):
+        return self.keyPressed
 
     def setMode(self, mode):
         if mode == self.mode:

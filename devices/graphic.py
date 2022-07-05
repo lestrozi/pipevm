@@ -43,6 +43,6 @@ class Graphic(Device):
 
             # TODO if debug
             print(x, y, w, h, r, g, b, rgb)
-            self.vm.drawRect(x, y, x+w, h+y, rgb)
+            self.vm.drawRect(x, y, w, h, rgb)
         else:
             raise Exception(f"Invalid command: {c}")
