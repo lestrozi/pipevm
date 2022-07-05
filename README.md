@@ -8,10 +8,19 @@ Controlling a virtual machine that can have devices attached to it (such as a sc
 
 # But why?
 This all started in the discussion mentioned above, thinking about how an esolang only capable of outputing bytes could run PONG, for instance.
+
 This project aims to allow that and more.
 
 # Bits?
 (TBD) pipevm also allows input and output as bits if bitDictionary flag is set and 2 int values are specified, representing respectively which byte is 0 and which byte is 1 (default 48 ('0') and 49 ('1'))
+
+# PONG
+
+There's a PONG prototype in tests/pong.py (`cd tests && python3 pong.py`).
+
+It's a python program that only imports struct (to make it easier to output bytes) and subprocess (in order to run pipevm.py and handles stdin/stdout pipes), but it can play PONG (sort of, you can move the paddles using keys W and S).
+
+![pong prototype](https://i.imgur.com/YAo92JR.png)
 
 # Sample usage
 The echoed string can be cut short at any point (better results if it's before `\xff\x80` or `\xff\x81`) to see partial examples
