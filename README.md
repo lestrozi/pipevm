@@ -8,6 +8,7 @@ Controlling a virtual machine that can have devices attached to it (such as a sc
 
 # But why?
 This all started in the discussion mentioned above, thinking about how an esolang only capable of outputing bytes could run PONG, for instance.
+
 This project aims to allow that and more.
 
 # Bits?
@@ -15,7 +16,8 @@ This project aims to allow that and more.
 
 # PONG
 
-There's a PONG prototype in tests/pong.py (`cd tests && python3 pong.py`)
+There's a PONG prototype in tests/pong.py (`cd tests && python3 pong.py`).
+
 It's a python program that only imports struct (to make it easier to output bytes) and subprocess (in order to run pipevm.py and handles stdin/stdout pipes), but it can play PONG (sort of, you can move the paddles using keys W and S).
 
 ![pong prototype](https://i.imgur.com/YAo92JR.png)
