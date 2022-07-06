@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from bitutil import BitStream
-from devices import text, graphic, keyboard
+from devices import text, graphic, keyboard, pipeos
 from vm import Vm
 import fcntl
 import os
@@ -28,6 +28,7 @@ class PipeCmd:
                 text.Text(vm, self.outputBuffer, self.byteAligned),
                 graphic.Graphic(vm, self.outputBuffer, self.byteAligned),
                 keyboard.Keyboard(vm, self.outputBuffer, self.byteAligned),
+                pipeos.Os(vm, self.outputBuffer, self.byteAligned),
         ]
         self.device = self.devices[0]
         self.inputBuffer = BitStream()

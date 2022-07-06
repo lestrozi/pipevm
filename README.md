@@ -24,7 +24,7 @@ $ pongff="/tmp/pongff"; [ ! -p "$pongff" ] && mkfifo "$pongff";
 $ <"$pongff" ./pipevm.py | ./tests/pong.py >"$pongff"
 ```
 
-![pong prototype](https://i.imgur.com/YAo92JR.png)
+![pong prototype](https://i.imgur.com/COSukqV.gif)
 
 # Sample usage
 The echoed string can be cut short at any point (better results if it's before `\xff\x80` or `\xff\x81`) to see partial examples

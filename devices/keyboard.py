@@ -20,7 +20,7 @@ class Keyboard(Device):
         elif c == self.Commands.GET_KEYPRESSED:
             c = self.inputBuffer.read(8).uint
 
-            # TODO: improve method to algo read special keys
+            # TODO: improve method to allow read special keys
             kp = self.vm.getKeyPressed()
             if kp == None:
                 # for non-byte-aligned, just 1 or 2 bits might suffice
