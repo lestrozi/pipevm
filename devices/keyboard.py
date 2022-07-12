@@ -18,6 +18,7 @@ class Keyboard(Device):
         if c == self.Commands.WAIT_CHAR:
             raise Exception("Not implemented")
         elif c == self.Commands.GET_KEYPRESSED:
+            print("Get keypressed", file=sys.stderr)
             c = self.inputBuffer.read(8).uint
 
             # TODO: improve method to allow read special keys

@@ -50,10 +50,10 @@ generators = [
         ('05', "+++++>"),                                           # 5
         ('paddle_size', ">+++++[<++++++>-]"),                       # 30
         ('paddle_right_x', ">++++++++[<++++++++>-]"),               # 64
-        ('paddle_left_y', ">>+>+>+[>+[-<++++>]<<]>[-<+<+>>]"),      # 105
-        ('paddle_right_y', ""),                                     # 105
+        ('paddle_left_y', ">>+>+>+[+>++[-<+++>]<<]>-[-<+<+>>]"),    # 103
+        ('paddle_right_y', ""),                                     # 103
         ('ball_x0', ""),                                            # 0
-        ('ball_x1', ">+>+>+++[+>+[-<++++>]<<]>>"),                 # 158
+        ('ball_x1', ">+>+>+++[+>+[-<++++>]<<]>>"),                  # 158
         ('ball_y0', ">"),                                           # 0
         ('ball_y1', ">+++++++++[<+++++++++++++>-]"),                # 117
         ('ff', ">+>+>+>+[++>[-<++++>]<<]>[-<+>]"),                  # 255
@@ -70,17 +70,6 @@ generators = [
 ]
 
 bfgen = BfGen(generators)
-
-paddle_w, paddle_h = 5, 30
-paddle_left_x = 5
-#paddle_left_y = int(h/2)
-paddle_right_x = 4 # mem index
-#paddle_right_y = int(h/2)
-paddle_rgb = (240, 240, 240)
-
-ball_x, ball_y = 8, 10	# mem index
-ball_w, ball_h = 5, 5
-ball_rgb = (240, 240, 0)
 
 bfgen.output("ff.device.")
 
@@ -149,7 +138,6 @@ print("end boundaries check")
 # draw new ball
 bfgen.output("05.ball_x0.ball_x1.ball_y0.ball_y1.00.05.00.05.f0.f0.00.")
 
-
 print("move right paddle (computer)")
 # move paddle_right_x
 bfgen.output("mem0+ball_direction_x[")  # if ball_direction_x != 0
@@ -178,7 +166,26 @@ bfgen.output("]mem3[-]mem2[-]")
 bfgen.output("05.01.paddle_right_x.00.paddle_right_y.00.05.00.paddle_size.f0.f0.f0.")
 bfgen.output("mem0-ball_direction_x[mem1+ball_direction_x-]")
 bfgen.output("]mem1[ball_direction_x+mem1-]mem0[-]")
-print("BBB")
+
+print("move left paddle (user input)")
+bfgen.output("ff.device+.-01.")  # ff 02 01 (ff device command)
+bfgen.output("mem0,")  # read char
+bfgen.output("mem0[,mem2+mem3+mem4+++[mem5[-mem4++++++mem5]mem3]") # if mem0 != 0, read another char and generate 115 ('s')
+bfgen.curPos = bfgen.labels["mem1"]
+bfgen.output("mem2[-mem0-mem2]mem1+mem0")
+bfgen.output("[----[>-]mem1[mem3+++++mem5+mem1-mem2]mem1[-]]")
+bfgen.output("mem2[mem5+++++>+<mem2->]mem0[-]]")
+
+bfgen.output("ff.device.")
+
+bfgen.output("mem5[05.00.05.00.paddle_left_y.00.05.00.paddle_size.00.00.00.mem5[-]]") # delete left paddle
+bfgen.output("mem3[-paddle_left_y-mem2+mem3]")   # paddle_left_y += mem3, set mem2
+bfgen.output("mem4[-paddle_left_y+mem2+mem4]")   # paddle_left_y -= mem4, set mem2
+bfgen.output("mem2[05.00.05.00.paddle_left_y.00.05.00.paddle_size.f0.f0.f0.mem2[-]]") # redraw left paddle
+
+# draw right paddle
+bfgen.output("05.01.paddle_right_x.00.paddle_right_y.00.05.00.paddle_size.f0.f0.f0.")
+
 
 # return to initial position of the loop
 bfgen.output("05")
