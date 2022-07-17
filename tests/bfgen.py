@@ -10,7 +10,7 @@ class BfGen():
 
         print()
 
-        self.curPos = len(generators) - 7   # FIXME
+        self.curPos = len(generators) - 9   # FIXME
 
     def moveToPos(self, goalPos):
         d = self.curPos - goalPos
@@ -50,8 +50,8 @@ generators = [
         ('05', "+++++>"),                                           # 5
         ('paddle_size', ">+++++[<++++++>-]"),                       # 30
         ('paddle_right_x', ">++++++++[<++++++++>-]"),               # 64
-        ('paddle_left_y', ">>+>+>+[+>++[-<+++>]<<]>-[-<+<+>>]"),    # 103
-        ('paddle_right_y', ""),                                     # 103
+        ('paddle_right_y', ">>+>+>+[+>++[-<+++>]<<]>-[-<+<+>>]"),   # 103
+        ('paddle_left_y', ""),                                      # 103
         ('ball_x0', ""),                                            # 0
         ('ball_x1', ">+>+>+++[+>+[-<++++>]<<]>>"),                  # 158
         ('ball_y0', ">"),                                           # 0
@@ -67,6 +67,8 @@ generators = [
         ('mem3', ""),                                               # 0
         ('mem4', ""),                                               # 0
         ('mem5', ""),                                               # 0
+        ('mem6', ""),                                               # 0
+        ('mem7', ""),                                               # 0
 ]
 
 bfgen = BfGen(generators)
@@ -94,10 +96,8 @@ bfgen.output("[")   # main loop [
 bfgen.output("05.ball_x0.ball_x1.ball_y0.ball_y1.00.05.00.05.00.00.00.")
 
 # moves ball_x, handling over/underflow
-bfgen.output("ball_direction_x[-mem0+mem1+ball_direction_x]mem1[-ball_direction_x+mem1]+ball_x1-----[-mem0+ball_x1]mem0+++[mem1-]mem2")
-bfgen.curPos = bfgen.labels["mem1"]
-bfgen.output("[ball_y0+ball_x0[-ball_y0-ball_x0]ball_y0[-ball_x0+ball_y0]ball_x1+ball_x0[mem0+++++ball_x1-]ball_y0")
-bfgen.curPos = bfgen.labels["ball_x1"]
+bfgen.output("ball_direction_x[-mem0+mem1+ball_direction_x]mem1[-ball_direction_x+mem1]+ball_x1-----[-mem0+ball_x1]mem0+++[mem1-]>")
+bfgen.output("[ball_y0+ball_x0[-ball_y0-ball_x0]ball_y0[-ball_x0+ball_y0]ball_x1+ball_x0[mem0+++++ball_x1-]>")
 bfgen.output("[mem0-----ball_x1-ball_y0]mem1-mem2]")
 bfgen.output("mem0---[-ball_x1+mem0]")
 
@@ -119,18 +119,56 @@ bfgen.output("mem0[-ball_y1+mem0]")
 # mem0 = ball_x0-ball_x1, using ball_y0 as a buffer
 print("start boundaries check")
 bfgen.output("ball_x0[-ball_y0+mem1+ball_x0]ball_y0[-ball_x0+ball_y0]")
-bfgen.output("ball_x1[-ball_y0+mem0+ball_x1]ball_y0[-ball_x1+ball_y0]")
-bfgen.output("mem1[-mem0-mem1]")
-bfgen.output("mem0[-mem2+mem3+mem0]mem2[-mem0+mem2]")
+bfgen.output("ball_x1[-ball_y0+mem5+ball_x1]ball_y0[-ball_x1+ball_y0]")
+bfgen.output("mem1+mem5[-mem6+mem7+mem5]mem6[-mem3+mem6]")
+print("check left boundary")
 # if mem0 == 13, reached left boundary
-bfgen.output("mem1+mem0-------------[mem1-]mem2")
-bfgen.curPos = bfgen.labels["mem1"]
-bfgen.output("[ball_direction_x++++++++++mem1-mem2]mem0[-]")
+bfgen.output("mem4+mem3-------------[mem4-]>")
 
-# now repeat the check for mem0 = 49 (reached right boundary)
-bfgen.output("mem3[-mem0+mem3]")
-bfgen.output("mem1+mem0----------------------------------------------[mem1-]mem2")
-bfgen.curPos = bfgen.labels["mem1"]
+# algorithm (done in debugger, not converted here) to
+# bounce the ball if it hits the paddle or to reset
+# ball_x and ball_y to the center otherwise
+print("""
+[
+  -
+  copy ball_y to mem3 and paddle_left_y to mem4
+  <<<<<<<<<<[-<+>>>>>>>>>>+<<<<<<<<<]<[->+<]
+  <<<[->>>+>>>>>>>>>>>+<<<<<<<<<<<<<<]>>>[-<<<+>>>]
+  >>>>>>>>>>
+  if mem3 ge mem4
+  [->-[>]<<]<  (mem3 ends up = mem4 minus men3)
+  [
+    then if mem3 ge 31
+    >>>>+++++[<++++++>-]<+
+    <[->-[>]<<]<
+    [then just clean up ->]<
+    [else set mem0=1 ><<+>-]>
+  ]
+  >>[-]<<<[-]+<
+  if mem0 eq 1 (ball hit left paddle)
+  [
+    then change direction of the ball
+    <<++++++++++>>-
+    >-]>
+  [< else reset ball_y
+    >>[-]>>[-]<<<<
+    <<<<<<[-]<<[-]
+    +>+++[++>++[-<++++++>]<<]>      117
+    [->+>+<<]
+    <++++++++++[->++++<]>+>[-<+>]   158
+    >>>>>>>
+    >->
+  ]
+  >>>
+]
+<<[-]<<[-]<
+""")
+
+bfgen.curPos = bfgen.labels["mem0"]
+
+# now repeat the check for mem0 = 47 (+256=303) (reached right boundary)
+bfgen.output("mem7[-mem0+mem7]")
+bfgen.output("mem1+mem0-----------------------------------------------[mem1-]>")
 bfgen.output("[ball_direction_x----------mem1-mem2]mem0[-]")
 bfgen.output("mem1[-]mem2[-]mem3[-]")
 print("end boundaries check")
@@ -152,7 +190,7 @@ bfgen.output("mem5+mem3+++++++++++++++mem2[-mem3-[mem4]mem2]mem5")
 bfgen.curPos = bfgen.labels["mem4"]
 bfgen.output("[-")
 # mem2 >= mem3
-bfgen.output("paddle_left_y-----mem3")  # must be 1 position before paddle_right_x
+bfgen.output("paddle_right_x-----mem3")  # must be 1 position before paddle_right_y
 bfgen.curPos = bfgen.labels["mem4"]
 
 bfgen.output("]mem5")
@@ -185,7 +223,6 @@ bfgen.output("mem2[05.00.05.00.paddle_left_y.00.05.00.paddle_size.f0.f0.f0.mem2[
 
 # draw right paddle
 bfgen.output("05.01.paddle_right_x.00.paddle_right_y.00.05.00.paddle_size.f0.f0.f0.")
-
 
 # return to initial position of the loop
 bfgen.output("05")
