@@ -150,14 +150,27 @@ print("""
     then change direction of the ball
     <<++++++++++>>-
     >-]>
+
   [< else reset ball_y
     >>[-]>>[-]<<<<
     <<<<<<[-]<<[-]
     +>+++[++>++[-<++++++>]<<]>      117
     [->+>+<<]
     <++++++++++[->++++<]>+>[-<+>]   158
-    >>>>>>>
-    >->
+
+    request a random char (ff 03 01 01 ff 01)
+    >>.>++.>>[-]+..<<<.>--.
+    >>->[-]>+>[-]>+>[-]>+>>
+    read random char (mem6) and set mem1 and mem2 to (mem6 % 4) (in binary)
+    ,[
+      -
+      <<<<
+      [-[<[-<->]<[->+<]+>>-->]>>[-]]<[<]>[-]<<++
+      >>+>>
+    ]<<-<<-<<->>
+    set the ball (x and y) directions based on mem1 and mem2
+    [-<<<++++++++++>>>]<[-<<<++++++++++>>>]
+    >
   ]
   >>>
 ]
