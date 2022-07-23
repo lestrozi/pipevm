@@ -139,7 +139,22 @@ print("""
                return to initial position
                ->>>>
             ]
-    echo    >[->>>>>>>[++++++++++.>]<[[-]<]<<]
+    echo    >[>>>[>]>sentinel+++++[-<++++>]<++[<]>>>>[>----------------------]>
+              [
+                found another space assume it's followed by a lessthan symbol [-]
+                >[>]<zero the sentinel[-]
+                switch to filesystem device & request write
+                generate 255>-.
+                generate 132-[-->-<]>+++.<+++.--->[-]
+                <<shift filename right <[[->+<]<]
+                count and send writeLength<< [[->>+<<]>[-<+>]<+<]...>----.>>[>]>
+                print filename [++++++++++.>].
+                <[[-]<]<[<]<[-]
+                >>[>]>
+              ]
+              <[-]<[<]>>>>>[++++++++++++++++++++++++++++++++.>]<[[-]<]
+              return to known position -[+<-]
+            ]
     cat     >[- switch to filesystem device & request read and path <<<<<<<[<]>.>++++.---->+.---........++[>]>>>>>>>>>>>[++++++++++.>].
                 return cleaning <[[-]<]
                 switch back to text device <<<<<<<<[<]>.>.[>]
