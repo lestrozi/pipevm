@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from bitutil import BitStream
-from devices import text, graphic, keyboard, pipeos
+from devices import text, graphic, keyboard, pipeos, filesystem
 from vm import Vm
 import fcntl
 import os
@@ -18,17 +18,21 @@ class PipeCmd:
         self.byteAligned = True
         self.bitDictionary = None #[48, 49]    # bytes that represent bit-0 and bit-1 respectively
                                     # is ignored if byteAligned = True
+        self.filesystemRoot = "/tmp/pipevm/"
 
 
         # for now, let all devices share the same outputBuffer
         self.outputBuffer = BitStream()
 
         self.vm = vm
+        filesystemDevice = filesystem.Filesystem(vm, self.outputBuffer, self.byteAligned)
+        filesystemDevice.setRoot(self.filesystemRoot)
         self.devices = [
                 text.Text(vm, self.outputBuffer, self.byteAligned),
                 graphic.Graphic(vm, self.outputBuffer, self.byteAligned),
                 keyboard.Keyboard(vm, self.outputBuffer, self.byteAligned),
                 pipeos.Os(vm, self.outputBuffer, self.byteAligned),
+                filesystemDevice,
         ]
         self.device = self.devices[0]
         self.inputBuffer = BitStream()

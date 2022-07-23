@@ -1,7 +1,6 @@
 # pongff="/tmp/pongff"; [ ! -p "$pongff" ] && mkfifo "$pongff";
 # rm -f /tmp/p; python3 bfponggen.py >/tmp/p.bf && python2.7 ~/bfc.py /tmp/p.bf && <"$pongff" ../pipevm.py | /tmp/p >"$pongff"
 
-from pong import draw_rectangle, move_ball
 import struct
 
 class BfGen():
