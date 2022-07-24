@@ -1,77 +1,26 @@
-"""
 * invalid commands have undefined behavior
-* errors aren't handled (e.g. trying to delete a non-existing file)
+* errors aren't handled (eg trying to delete a nonexisting file)
 
-echo [word]             print word
-echo [word] >[path]     print word to file
-ls [path]               list files/dirs
-mkdir [path]            mkdir path
-rm [path]               remove file or empty dir
-cat [path]              cat file
-#anything               comment (TODO)
+echo {word}             print word
+echo {word} >{path}     print word to file
+ls {path}               list files/dirs
+mkdir {path}            mkdir path
+rm {path}               remove file or empty dir
+cat {path}              cat file
 
-in reality, only the first letter is checked, so
+in reality only the first letter is checked:
 "mkdir FOO" is equivalent to "monkeyFOO" for example
-"""
-
-import struct
-
-class BfGen():
-    def __init__(self, generators):
-        self.labels = {}
-        for i in range(len(generators)):
-            self.labels[generators[i][0]] = i
-            print(generators[i][1])
-
-        print()
-
-        self.curPos = len(generators) - 1
-
-    def moveToPos(self, goalPos):
-        d = self.curPos - goalPos
-        self.curPos -= d
-
-        if d >= 0:
-            return "<" * d
-
-        return ">" * -d
-
-    def output(self, s):
-        result = ""
-        label = ""
-
-        for c in s:
-            if c in '[]<>{}+-.,':
-                if label:
-                    label = label.strip()
-                    v = self.moveToPos(self.labels[label])
-                    result += v
-                    label = ""
-                result += c
-            else:
-                label += c
-        
-        if label:
-            label = label.strip()
-            v = self.moveToPos(self.labels[label])
-            result += v
-
-        print(result)
 
 
-generators = [
-        ('00', ""),                                                	# 0
-        ('ff', ">+>+>+>+[++>[-<++++>]<<]>>"),                       # 255
-        ('device', ">+>+[+>++[-<+++++++>]<<]>[-<+>]"),              # 128
-        ('01', "+>"),                           					# 01
-        ('0A', "++++++++++>"),                           			# 10
-        ('space', ">>++++++++[<++++<++++>>-]"),                     # 32
-        ('$', "<++++"),                                         	# 36
-]
+{0} {255} {128} {1} {10} {32} {36}:
+>+>+>+>+[++>[-<++++>]<<]>>
+>+>+[+>++[-<+++++++>]<<]>[-<+>]
++>
+++++++++++>
+>>++++++++[<++++<++++>>-]
+<++++
 
-bfgen = BfGen(generators)
 
-print("""
 >+sentinel
 >invalid command
 >rm
@@ -96,7 +45,7 @@ print("""
     >[--[-------[-[-----[<]<]<]<]<]<+
     <-[+<-]
 
-    invalid >[-<<[->+>+<<]>[-<+>>+<]>---.+++++++++++++..[-]++++++++++.[-]]
+    invalid >[-<<[->+>+<<]>[-<+>>+<]>---.+++++++++++++..[-] +>>>>>>[[-]>] -[+<-]]
     rm      >[- switch to filesystem device & request rm and path <<<<<[<]>.>++++.---->++++.----[>]>>>>>>>>>>[++++++++++.>].
                 return cleaning <[[-]<]
                 switch back to text device <<<<<<<<[<]>.>.[>]
@@ -147,13 +96,19 @@ print("""
                 generate 255>-.
                 generate 132-[-->-<]>+++.<+++.--->[-]
                 <<shift filename right <[[->+<]<]
-                count and send writeLength<< [[->>+<<]>[-<+>]<+<]...>----.>>[>]>
+                count and send writeLength<< [[->>+<<]>[-<+>]<+<]...>----.>>
+                set a flag indicating we're writing to file <<<<<<+>>>>>>
+                advance to filename [>]>
                 print filename [++++++++++.>].
                 <[[-]<]<[<]<[-]
                 >>[>]>
               ]
               <[-]<[<]>>>>>[++++++++++++++++++++++++++++++++.>]<[[-]<]
               return to known position -[+<-]
+              <[
+                flag indicating we're writing to file is set
+                expect to read the return value (and ignore it) ,[-]
+              ]>
             ]
     cat     >[- switch to filesystem device & request read and path <<<<<<<[<]>.>++++.---->+.---........++[>]>>>>>>>>>>>[++++++++++.>].
                 return cleaning <[[-]<]
@@ -166,4 +121,4 @@ print("""
     reset sentinel <<<<<<<+>>>>>>
     +
 ]
-""")
+

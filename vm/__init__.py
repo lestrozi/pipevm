@@ -2,6 +2,7 @@ import sys
 import threading
 import time
 import tkinter as tk 
+import tkinter.scrolledtext as scrolledtext
 
 class Vm(threading.Thread):
     class Mode:
@@ -24,6 +25,7 @@ class Vm(threading.Thread):
         self.setMode(self.Mode.TEXT)
 
         self.text.insert('end', '%s' % b)
+        self.text.see(tk.END)
 
     def drawRect(self, x, y, w, h, color):
         self.setMode(self.Mode.GRAPHIC)
@@ -97,7 +99,7 @@ class Vm(threading.Thread):
         self.text_rows_columns = (25, 80)
         self.canvas_height_width = (320, 240)
 
-        self.text = tk.Text(self.root, background='black', foreground='white', font=('Courier', 16), height=self.text_rows_columns[0], width=self.text_rows_columns[1])
+        self.text = scrolledtext.ScrolledText(self.root, background='black', foreground='white', font=('Courier', 16), height=self.text_rows_columns[0], width=self.text_rows_columns[1])
         self.text.pack()
         self.text.update()
         self.text_width_height = (self.text.winfo_width(), self.text.winfo_height())

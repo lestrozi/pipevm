@@ -34,10 +34,11 @@ class Filesystem(Device):
 
         relative_path = self.inputBuffer[start:zeroBytePos].bytes.decode('utf-8')
 
+        newPath = self.root + "/" + relative_path
         # raise exception if path traversal
-        Path(self.root).joinpath(relative_path).resolve().relative_to(self.root).resolve()
+        Path(newPath).resolve().relative_to(self.root).resolve()
 
-        abs_path = Path(self.root).joinpath(relative_path)
+        abs_path = str(Path(newPath).resolve())
 
         return abs_path, (zeroBytePos-start)
 
@@ -57,9 +58,12 @@ class Filesystem(Device):
             self.inputBuffer.read(8)
             self.inputBuffer.read(pathLen + 8)
 
+            rel_path = abs_path[len(self.root):]
             print(f"ls {abs_path}", file=sys.stderr)
             for f in os.listdir(abs_path):
-                self.output(BitStream(f.encode('utf-8') + bytes([0])))
+                p = str(Path(abs_path + "/" + f))
+                p = p[len(self.root):]
+                self.output(BitStream((p.encode('utf-8') + bytes([0]))))
             self.output(BitStream(bytes([0])))
         elif c == self.Commands.STAT:
             start = 8
