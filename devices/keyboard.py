@@ -16,8 +16,12 @@ class Keyboard(Device):
         # TODO: allow non-byte-aligned commands
         c = self.inputBuffer.peek(8).uint
         if c == self.Commands.WAIT_CHAR:
-            raise Exception("Not implemented")
+            print("Wait char", file=sys.stderr)
+
+            c = self.vm.waitChar()
+            self.output(BitStream(c.encode('latin-1')))
         elif c == self.Commands.GET_KEYPRESSED:
+            print("Get keypressed", file=sys.stderr)
             c = self.inputBuffer.read(8).uint
 
             # TODO: improve method to allow read special keys

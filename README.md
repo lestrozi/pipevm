@@ -1,32 +1,49 @@
 # pipevm
-A virtual machine controlled via stdin/stdout
+PipeVM is a binary protocol - and a Python implementation - of a Virtual Machine that can be controlled via stdin/stdout.
 
-Heavily inspired by discussion in https://github.com/tomhea/flip-jump/discussions/154
+It was heavily inspired by discussion in https://github.com/tomhea/flip-jump/discussions/154 about how to extend the capabilities of programming languages with limited I/O implementation (as most esolangs, for example, that can only read bytes from stdin and write bytes to stdout).
 
-# Why?
-Controlling a virtual machine that can have devices attached to it (such as a screen, keyboard, etc.) via stdin/stdout allows extending I/O capabilities of any program that can output bytes (or bits, see below) to graphic mode, accessing file system, sockets, etc.
+# Devices
+This is a prototype implements 5 devices:
+[a relative link](other_file.md)
+  * [devices/text.py](devices/text.py) - ASCII console with auto-scroll
+  * [devices/graphic.py](devices/graphic.py) - 320x240 24-bits RGB graphic screen
+  * [devices/keyboard.py](devices/keyboard.py) - A keyboard that can wait for a char (blocking) or return which key is pressed (non-blocking)
+  * [devices/pipeos.py](devices/pipeos.py) - Miscellaneous methods, like a pseudorandom number generator; this probably won't exist in the final version
+  * [devices/filesystem.py](devices/filesystem.py) - Interface to a real filesystem (chrooted), supporting ls, stat, read, write, mkdir, rm
 
-# But why?
-This all started in the discussion mentioned above, thinking about how an esolang only capable of outputing bytes could run PONG, for instance.
+# Demo
+To demonstrate how it can be used, there are two main demos in the tests/ folder:
 
-This project aims to allow that and more.
+## [tests/bfponggen.py](tests/bfponggen.py)
+A (graphical) Pong implementation in brainfuck (the script is python because it's used to generate the brainfuck code)
 
-# Bits?
-(TBD) pipevm also allows input and output as bits if bitDictionary flag is set and 2 int values are specified, representing respectively which byte is 0 and which byte is 1 (default 48 ('0') and 49 ('1'))
+![pong prototype in brainfuck](demos/pong.gif?raw=true "Pong prototype in Brainfuck")
 
-# PONG
 
-There's a PONG prototype in tests/pong.py. It's a python program that only imports sys and struct (to make it easier to output bytes), but it can play PONG (sort of, you can move the paddles using keys W and S).
+## [tests/sh.bf](tests/sh.bf)
+A basic UNIX shell implementation with ls, echo (including redirecting output to a file), mkdir, rm and cat
 
-You can run connecting it's stdin/stdout to pipevm stdout/stdin:
-```
-$ pongff="/tmp/pongff"; [ ! -p "$pongff" ] && mkfifo "$pongff";
-$ <"$pongff" ./pipevm.py | ./tests/pong.py >"$pongff"
-```
+![UNIX Shell prototype in brainfuck](demos/shell.gif?raw=true "UNIX Shell prototype in Brainfuck")
 
-![pong prototype](https://i.imgur.com/COSukqV.gif)
+
+## Running
+
+To run the demos, you need to create a FIFO:
+
+`$ ff="/tmp/ff"; [ ! -p "$ff" ] && mkfifo "$ff";`
+
+And then execute the compiled (or interpreted) code like:
+
+`$ <"$ff" ./pipevm.py | /tmp/your_program >"$ff"`
+
+There are probably ways to make this work on Windows, but I haven't tried.
+Keep in mind that your program must output raw bytes, not UTF-8 encoded strings (unless you pipe it through `iconv -f utf-8 -t latin1`, but I wouldn't recommend that).
+
 
 # Sample usage
+Other than the demos above, simply writing to pipevm stdin can be used to see how it works.
+
 The echoed string can be cut short at any point (better results if it's before `\xff\x80` or `\xff\x81`) to see partial examples
 
 ```

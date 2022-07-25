@@ -1,0 +1,30 @@
+$ echo -e "\xff\x84\x00.\x00" | ./pipevm.py 
+Selecting device 4
+ls /tmp/pipevm
+barfoo
+
+$ echo -e "\xff\x84\x01foo\x00" | ./pipevm.py 
+Selecting device 4
+stat /tmp/pipevm/foo
+
+$ echo -e "\xff\x84\x02\x00\x00\x00\x99foo\x00" | ./pipevm.py 
+Selecting device 4
+reading 153 bytes from /tmp/pipevm/foo
+foobar1
+
+$ echo -ne "\xff\x84\x03\x00\x00\x00\x05zzz\x00abcde" | ./pipevm.py 
+Selecting device 4
+writing 5 bytes to /tmp/pipevm/zzz
+
+$ echo -ne "\xff\x84\x04dir1\x00" | ./pipevm.py 
+Selecting device 4
+mkdir /tmp/pipevm/dir1
+
+$ echo -ne "\xff\x84\x05dir1\x00" | ./pipevm.py 
+Selecting device 4
+trying to remove file /tmp/pipevm/dir1
+trying to remove dir /tmp/pipevm/dir1
+
+$ echo -ne "\xff\x84\x05foo\x00" | ./pipevm.py 
+Selecting device 4
+trying to remove file /tmp/pipevm/foo
