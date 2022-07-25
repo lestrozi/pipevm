@@ -5,7 +5,6 @@ It was heavily inspired by discussion in https://github.com/tomhea/flip-jump/dis
 
 # Devices
 This is a prototype implements 5 devices:
-[a relative link](other_file.md)
   * [devices/text.py](devices/text.py) - ASCII console with auto-scroll
   * [devices/graphic.py](devices/graphic.py) - 320x240 24-bits RGB graphic screen
   * [devices/keyboard.py](devices/keyboard.py) - A keyboard that can wait for a char (blocking) or return which key is pressed (non-blocking)
