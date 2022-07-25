@@ -5,25 +5,36 @@ It was heavily inspired by discussion in https://github.com/tomhea/flip-jump/dis
 
 # Devices
 This is a prototype implements 5 devices:
-  * devices/text.py - ASCII console with auto-scroll
-  * devices/graphic.py - 320x240 24-bits RGB graphic screen
-  * devices/keyboard.py - A keyboard that can wait for a char (blocking) or return which key is pressed (non-blocking)
-  * devices/pipeos.py - Miscellaneous methods, like a pseudorandom number generator; this probably won't exist in the final version
-  * devices/filesystem.py - Interface to a real filesystem (chrooted), supporting ls, stat, read, write, mkdir, rm
+[a relative link](other_file.md)
+  * [devices/text.py](devices/text.py) - ASCII console with auto-scroll
+  * [devices/graphic.py](devices/graphic.py) - 320x240 24-bits RGB graphic screen
+  * [devices/keyboard.py](devices/keyboard.py) - A keyboard that can wait for a char (blocking) or return which key is pressed (non-blocking)
+  * [devices/pipeos.py](devices/pipeos.py) - Miscellaneous methods, like a pseudorandom number generator; this probably won't exist in the final version
+  * [devices/filesystem.py](devices/filesystem.py) - Interface to a real filesystem (chrooted), supporting ls, stat, read, write, mkdir, rm
 
 # Demo
 To demonstrate how it can be used, there are two main demos in the tests/ folder:
-  * tests/bfponggen.py - A (graphical) Pong implementation in brainfuck (the script is python because it's used to generate the brainfuck code)
-  * tests/sh.bf - A basic UNIX shell implementation with ls, echo (including redirecting output to a file), mkdir, rm and cat
+
+## [tests/bfponggen.py](tests/bfponggen.py)
+A (graphical) Pong implementation in brainfuck (the script is python because it's used to generate the brainfuck code)
 
 ![pong prototype in brainfuck](demos/pong.gif?raw=true "Pong prototype in Brainfuck")
+
+
+## [tests/sh.bf](tests/sh.bf)
+A basic UNIX shell implementation with ls, echo (including redirecting output to a file), mkdir, rm and cat
+
 ![UNIX Shell prototype in brainfuck](demos/shell.gif?raw=true "UNIX Shell prototype in Brainfuck")
 
 
+## Running
+
 To run the demos, you need to create a FIFO:
+
 `$ ff="/tmp/ff"; [ ! -p "$ff" ] && mkfifo "$ff";`
 
 And then execute the compiled (or interpreted) code like:
+
 `$ <"$ff" ./pipevm.py | /tmp/your_program >"$ff"`
 
 There are probably ways to make this work on Windows, but I haven't tried.
