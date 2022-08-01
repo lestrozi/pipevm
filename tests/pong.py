@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
 import struct
@@ -105,7 +105,7 @@ def switch_device(deviceNum):
     SPECIAL_CHAR = 0xff
     DEVICE_SELECTOR = 0x80
     return struct.pack(">BB", SPECIAL_CHAR, (DEVICE_SELECTOR+deviceNum))
-    
+
 
 def draw_rectangle(x, y, w, h, r, g, b):
     # FIXME: if any parameter is 0xff, they need to be escaped by another 0xff
