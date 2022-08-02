@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from bitutil import BitStream
 from devices import text, graphic, keyboard, pipeos, filesystem
